@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zombie</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(53, 2, 2, 0.981);
+            padding: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+            width: 135px;
+            padding: 10px 25px;
+            background-color: rgba(53, 2, 2, 0.981);
+            border: 2px solid white;
+            border-radius: 5px;
+            color: white
+        }
+
+        .game-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            border: 2px solid white;
+            /* Рамка для отображения границ элементов */
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 800px;
+            border-radius: 10px;
+            margin: 50px auto;
+            background-image: url("images/wall.jpg");
+            background-size: 100%;
+            background-position-y: -255px;
+            box-shadow: 0 0 50px 30px rgba(0, 0, 0, 0.5);
+            cursor: url("images/aim.svg"), pointer;
+        }
+
+        .item {
+            box-sizing: border-box;
+            /* Учитывать padding и border в расчетах ширины */
+
+            width: 120px;
+            height: 120px;
+            margin: 10px 20px;
+           /* border-radius: 50%;
+            border: 2px solid white;
+            /* Рамка для отображения границ элементов */
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-panel">
+        <div>
+        <button id="sound-btn">SOUND ON</button>
+        <button id="start-btn">START</button>
+        </div>  
+        <div>
+            <div class="counter">HITS:
+                <span id="hit-counter">0</span>
+            </div>
+            <div class="counter">MISS:
+                <span id="miss-counter">0</span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+    </div>
+    <audio id="sound-bu">
+        <source src="sounds/bu.mp3" loop type="audio/mpeg">
+    </audio>
+    <audio id="sound-shot">
+        <source src="sounds/shot.mp3"  type="audio/mpeg">
+    </audio>
+
+    <script>
+        let randomIndex;
+        let hit = true;
+        let isStarted = false;
+        let interval;
+
+        function getRandomIndex(array) {
+            return Math.floor(Math.random() * array.length);
+        }
+
+        const items = document.querySelectorAll(".item");
+        const missCounter = document.getElementById("miss-counter");
+
+        const zombieImg = document.createElement("img");
+        zombieImg.src = "images/zombie.png";
+
+        const bu = document.getElementById("sound-bu");
+        const btnOn = document.getElementById("sound-btn");
+
+       const startBtn = document.getElementById("start-btn");
+
+        const hitImg = document.createElement("img");
+        hitImg.src = "images/blood.png";
+
+        const shot = document.getElementById("sound-shot");
+        const hitCounter = document.getElementById("hit-counter");
+
+        btnOn.addEventListener("click", function () {
+            if (this.innerHTML === "SOUND ON") {
+                bu.play();
+                this.innerHTML = "SOUND OFF";
+            } else {
+                bu.pause();
+                this.innerHTML = "SOUND ON";
+            }
+        });
+
+        zombieImg.addEventListener("click", function () {
+            hit = true;
+            shot.currentTime = 0;
+            shot.play();
+            zombieImg.remove();
+            items[randomIndex].append(hitImg);
+            hitCounter.innerHTML = Number(hitCounter.innerHTML) + 1;
+
+        });
+
+        startBtn.addEventListener("click", function () {
+            if (!isStarted) {
+                
+                isStarted = true;
+                startGame();
+                startBtn.innerHTML = "STOP";
+                
+            } else {
+               
+                isStarted = false;
+                clearInterval(interval);
+                startBtn.innerText = "START";
+                hitCounter.innerText = 0;
+                missCounter.innerText = 0;
+                zombieImg.remove();
+                hitImg.remove();
+            }
+
+        });
+//game
+        function startGame() {
+
+        randomIndex = getRandomIndex(items);
+        items[randomIndex].append(zombieImg);
+
+        interval= setInterval(function () {
+            if (hit === true) {
+                hit = false;
+            } else {
+                missCounter.innerHTML = Number(missCounter.innerHTML) + 1;  
+            }
+            randomIndex = getRandomIndex(items);
+            items[randomIndex].append(zombieImg);
+            hitImg.remove();
+        }, 2000);
+        }
+
+    </script>
+</body>
+
+</html>
